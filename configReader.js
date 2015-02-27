@@ -2,6 +2,9 @@
 
 module.exports = function ($, config) {
     config = $.lodash.merge({
+            sources: {
+                index: []
+            },
             paths: {
                 pipeminTmp: 'tmp/'
             },
