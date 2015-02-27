@@ -1,0 +1,22 @@
+{
+  "name": "gulp-recipe-pipemin-index",
+  "version": "0.1.0",
+  "description": "Receipe for building index file in development",
+  "main": "main.js",
+  "scripts": {
+    "test": "exit 0"
+  },
+  "keywords": [
+    "PGS",
+    "gulp",
+    "gulp-receipe",
+    "pipemin",
+    "index",
+    "development"
+  ],
+  "author": "PGS Front",
+  "license": "ISC",
+  "dependencies": {
+    "gulp-pipemin": "^2.2.2"
+  }
+}
