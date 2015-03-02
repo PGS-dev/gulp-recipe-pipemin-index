@@ -6,7 +6,7 @@
  * @param $
  * @param config
  * @param sources
- * @config paths.pipeminTmp destination temp directory
+ * @config paths.pipeminTmp destination temp
  * @config paths.tmp
  * @sequential preDevBuild Preprocess index file before it hits pipemin
  * @sequential postDevBuild Post-process index before writing to fs
@@ -48,15 +48,17 @@ module.exports = function ($, config, sources) {
      */
     // no dependency on index, as preServe will be called by server
     $.gulp.task(config.tasks.pipeminWatchIndex, function () {
-        $.utils.watchSource([sources.devAssets, sources.index], ['index']);
+        $.utils.watchSource([sources.devAssets, sources.index], [config.tasks.pipeminIndex]);
     });
 
     return {
         /**
-         * @hooks postDevAssets dev assets sorting
+         * @hooks pipes.postDevAssets* dev assets sorting
          * @config order.postDevAssetsSort
          */
-        postDevAssetsSort: [config.order.postDevAssetsSort, $.utils.sortFiles],
+        pipes: {
+            postDevAssetsSort: [config.order.postDevAssetsSort, $.utils.sortFiles]
+        },
         /**
          * @hooks preServe index task
          */
