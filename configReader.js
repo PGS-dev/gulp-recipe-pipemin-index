@@ -1,10 +1,10 @@
 'use strict';
 
 module.exports = function ($, config) {
+
+    $.utils.checkMandatory(config, ['sources.index']);
+
     config = $.lodash.merge({
-            sources: {
-                index: []
-            },
             paths: {
                 pipeminTmp: 'tmp/'
             },
