@@ -63,7 +63,7 @@ _index_ task name.
 _watch:index_ task name.
 
 ### Order
-#### config.postDevAssetsSort
+#### config.order.postDevAssetsSort
 > default: 100
 
 Sorting of devAssets files
