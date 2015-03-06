@@ -2,7 +2,7 @@
 
 module.exports = function ($, config) {
 
-    $.utils.checkMandatory(config, ['sources.index']);
+    $.utils.checkMandatory(config, ['sources.index', 'sources.devAssets']);
 
     config = $.lodash.merge({
             paths: {

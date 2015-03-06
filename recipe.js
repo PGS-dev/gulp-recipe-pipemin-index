@@ -26,13 +26,16 @@ module.exports = function ($, config, sources) {
         var preBuildPipe = $.utils.sequentialLazypipe($.utils.getPipes('preDevBuild'));
         var postBuildPipe = $.utils.sequentialLazypipe($.utils.getPipes('postDevBuild'));
         var postDevAssetsPipe = $.utils.sequentialLazypipe($.utils.getPipes('postDevAssets'));
+        var devAssetPipe = $.utils.sequentialLazypipe($.utils.getPipes('devAsset'));
+
+        var assetStream = $.utils.mergedLazypipe([sources.devAssets.pipe(postDevAssetsPipe), devAssetPipe]);
 
         return $.lazypipe()
             .pipe(sources.index)
             .pipe(preBuildPipe)
             .pipe($.pipemin, {
                 assetsDir: '{' + sources.devAssets.bases.join(',') + '}',
-                assetsStream: sources.devAssets.pipe(postDevAssetsPipe),
+                assetsStream: assetStream,
                 js: null,
                 css: null
             })
@@ -48,7 +51,8 @@ module.exports = function ($, config, sources) {
      */
     // no dependency on index, as preServe will be called by server
     $.gulp.task(config.tasks.pipeminWatchIndex, function () {
-        $.utils.watchSource([sources.devAssets, sources.index], [config.tasks.pipeminIndex]);
+        var devAssetPipe = $.utils.sequentialLazypipe($.utils.getPipes('devAsset'));
+        $.utils.watchSource([devAssetPipe, sources.devAssets, sources.index], [config.tasks.pipeminIndex]);
     });
 
     return {
