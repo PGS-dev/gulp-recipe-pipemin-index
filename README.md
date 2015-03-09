@@ -74,10 +74,15 @@ _watch:index_ task name.
 #### config.order.postDevAssetsSort
 > default: 100
 
-Sorting of devAssets files
+Order of task for devAssets files sorting.
 
 ## Api
 ### Provided Hooks
+#### pipes.devAsset*
+> type: source<br>
+
+Additional assets feeding to pipemin. Use it to do your own sorting.
+
 #### pipes.postDevAssets*
 > type: sequence<br>
 > flow: sources.devAssets -> pipes.postDevAssets* -> pipemin's assetStream
