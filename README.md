@@ -16,7 +16,7 @@ Watch all index file dependencies and recompile it on change.
 ## Configuration
 ### Recipe specific
 
-### Sources
+### [Sources](https://github.com/PGS-dev/gulp-recipe-loader#sources-configuration-syntax)
 #### sources.index
 > mandatory<br>
 > flow: sources.index -> pipes.preBuild* -> pipemin -> merge with build -> pipes.postMerge* -> dest
