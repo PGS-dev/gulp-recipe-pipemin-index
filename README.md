@@ -4,6 +4,14 @@
 Container for fast project compilation with hooks, based on [gulp-pipemin](https://github.com/Frizi/gulp-pipemin).
 
 ## Tasks
+### index
+
+Compile index file and save in temp directory for serving.
+
+### watch:index
+> deps: index
+
+Watch all index file dependencies and recompile it on change.
 
 ## Configuration
 ### Recipe specific
