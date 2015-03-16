@@ -8,6 +8,7 @@
  * @param sources
  * @config paths.pipeminTmp destination temp
  * @config paths.tmp
+ * @merged devAssets Asset files for dev pipemin
  * @sequential preDevBuild Preprocess index file before it hits pipemin
  * @sequential postDevBuild Post-process index before writing to fs
  * @sequential postDevAssets Hook just after dev assets source pipe
@@ -15,6 +16,10 @@
  */
 module.exports = function ($, config, sources) {
     var _ = $.lodash;
+
+    function devAssetPipe() {
+        return $.utils.mergedLazypipe($.utils.getPipes('devAsset'));
+    }
 
     /**
      * Builds index with pipemin
@@ -24,13 +29,13 @@ module.exports = function ($, config, sources) {
      * @config sources.index index files to process
      * @config sources.devAssets assets list to be referenced in index file
      */
-    $.gulp.task(config.tasks.pipeminIndex, function () {
+    function pipeminIndexTask() {
         var preBuildPipe = $.utils.sequentialLazypipe($.utils.getPipes('preDevBuild'));
         var postBuildPipe = $.utils.sequentialLazypipe($.utils.getPipes('postDevBuild'));
         var postDevAssetsPipe = $.utils.sequentialLazypipe($.utils.getPipes('postDevAssets'));
-        var devAssetPipe = $.utils.queuedLazypipe($.utils.getPipes('devAsset'));
 
-        var assetStream = $.utils.mergedLazypipe([sources.devAssets.pipe(postDevAssetsPipe), devAssetPipe]);
+
+        var assetStream = $.utils.mergedLazypipe([sources.devAssets.pipe(postDevAssetsPipe), devAssetPipe()]);
 
         return $.lazypipe()
             .pipe(sources.index)
@@ -43,7 +48,8 @@ module.exports = function ($, config, sources) {
             })
             .pipe(postBuildPipe)
             .pipe($.gulp.dest, config.paths.pipeminTmp)();
-    });
+    }
+
 
     /**
      * Run watching on index and all dev assets, recompile index
@@ -52,16 +58,17 @@ module.exports = function ($, config, sources) {
      * @config tasks.watchIndex
      */
     // no dependency on index, as preServe will be called by server
-    $.gulp.task(config.tasks.pipeminWatchIndex, function () {
-        var devAssetPipe = $.utils.queuedLazypipe($.utils.getPipes('devAsset'));
-
-        $.utils.watchSource([devAssetPipe, sources.devAssets, sources.index], {
+    function pipeminWatchIndexTask() {
+        $.utils.watchSource([devAssetPipe(), sources.devAssets, sources.index], {
             events: ['add', 'unlink']
         }, _.debounce(function (vinyl) {
             console.log(vinyl.event, vinyl.path);
             $.utils.runSubtasks(config.tasks.pipeminIndex);
         }, 100))();
-    });
+    }
+
+    $.utils.maybeTask(config.tasks.pipeminWatchIndex,pipeminWatchIndexTask);
+    $.utils.maybeTask(config.tasks.pipeminIndex, pipeminIndexTask);
 
     return {
         /**
