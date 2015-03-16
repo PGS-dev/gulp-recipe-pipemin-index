@@ -14,6 +14,8 @@
  * @returns {*} postDevAssetsSort
  */
 module.exports = function ($, config, sources) {
+    var _ = $.lodash;
+
     /**
      * Builds index with pipemin
      * @task index
@@ -26,7 +28,7 @@ module.exports = function ($, config, sources) {
         var preBuildPipe = $.utils.sequentialLazypipe($.utils.getPipes('preDevBuild'));
         var postBuildPipe = $.utils.sequentialLazypipe($.utils.getPipes('postDevBuild'));
         var postDevAssetsPipe = $.utils.sequentialLazypipe($.utils.getPipes('postDevAssets'));
-        var devAssetPipe = $.utils.mergedLazypipe($.utils.getPipes('devAsset'));
+        var devAssetPipe = $.utils.queuedLazypipe($.utils.getPipes('devAsset'));
 
         var assetStream = $.utils.mergedLazypipe([sources.devAssets.pipe(postDevAssetsPipe), devAssetPipe]);
 
@@ -34,7 +36,7 @@ module.exports = function ($, config, sources) {
             .pipe(sources.index)
             .pipe(preBuildPipe)
             .pipe($.pipemin, {
-                assetsDir: '{' + sources.devAssets.bases.join(',') + '}',
+                assetsDir: '{' + assetStream.bases.join(',') + '}',
                 assetsStream: assetStream,
                 js: null,
                 css: null
@@ -51,9 +53,14 @@ module.exports = function ($, config, sources) {
      */
     // no dependency on index, as preServe will be called by server
     $.gulp.task(config.tasks.pipeminWatchIndex, function () {
-        var devAssetPipe = $.utils.mergedLazypipe($.utils.getPipes('devAsset'));
+        var devAssetPipe = $.utils.queuedLazypipe($.utils.getPipes('devAsset'));
 
-        $.utils.watchSource([devAssetPipe, sources.devAssets, sources.index], [config.tasks.pipeminIndex]);
+        $.utils.watchSource([devAssetPipe, sources.devAssets, sources.index], {
+            events: ['add', 'unlink']
+        }, _.debounce(function (vinyl) {
+            console.log(vinyl.event, vinyl.path);
+            $.utils.runSubtasks(config.tasks.pipeminIndex);
+        }, 100))();
     });
 
     return {
