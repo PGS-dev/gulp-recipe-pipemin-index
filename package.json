@@ -18,6 +18,6 @@
   "author": "PGS Front",
   "license": "ISC",
   "dependencies": {
-    "gulp-pipemin": "^2.2.2"
+    "gulp-pipemin": "^2.2.3"
   }
 }
