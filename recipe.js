@@ -11,8 +11,8 @@
  * @merged devAssets Asset files for dev pipemin
  * @sequential preDevBuild Preprocess index file before it hits pipemin
  * @sequential postDevBuild Post-process index before writing to fs
- * @sequential postDevAssets Hook just after dev assets source pipe
- * @returns {*} postDevAssetsSort
+ * @sequential postDevAsset Hook just after dev assets source pipe
+ * @returns {*} postDevAssetSort
  */
 module.exports = function ($, config, sources) {
     var _ = $.lodash;
@@ -32,10 +32,8 @@ module.exports = function ($, config, sources) {
     function pipeminIndexTask() {
         var preBuildPipe = $.utils.sequentialLazypipe($.utils.getPipes('preDevBuild'));
         var postBuildPipe = $.utils.sequentialLazypipe($.utils.getPipes('postDevBuild'));
-        var postDevAssetsPipe = $.utils.sequentialLazypipe($.utils.getPipes('postDevAssets'));
-
-
-        var assetStream = $.utils.mergedLazypipe([sources.devAssets.pipe(postDevAssetsPipe), devAssetPipe()]);
+        var postDevAssetPipe = $.utils.sequentialLazypipe($.utils.getPipes('postDevAsset'));
+        var assetStream = $.utils.mergedLazypipe([sources.devAssets.pipe(postDevAssetPipe), devAssetPipe()]);
 
         return $.lazypipe()
             .pipe(sources.index)
@@ -62,7 +60,6 @@ module.exports = function ($, config, sources) {
         $.utils.watchSource([devAssetPipe(), sources.devAssets, sources.index], {
             events: ['add', 'unlink']
         }, _.debounce(function (vinyl) {
-            console.log(vinyl.event, vinyl.path);
             $.utils.runSubtasks(config.tasks.pipeminIndex);
         }, 100))();
     }
@@ -72,11 +69,11 @@ module.exports = function ($, config, sources) {
 
     return {
         /**
-         * @hooks pipes.postDevAssets* dev assets sorting
-         * @config order.postDevAssetsSort
+         * @hooks pipes.postDevAsset* dev assets sorting
+         * @config order.postDevAssetSort
          */
         pipes: {
-            postDevAssetsSort: [config.order.postDevAssetsSort, $.utils.sortFiles]
+            postDevAssetSort: [config.order.postDevAssetSort, $.utils.sortFiles]
         },
         /**
          * @hooks preServe index task

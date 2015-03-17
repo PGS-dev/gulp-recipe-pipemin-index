@@ -83,9 +83,9 @@ Order of task for devAssets files sorting.
 
 Additional assets feeding to pipemin. Use it to do your own sorting.
 
-#### pipes.postDevAssets*
+#### pipes.postDevAsset*
 > type: sequence<br>
-> flow: sources.devAssets -> pipes.postDevAssets* -> pipemin's assetStream
+> flow: sources.devAssets -> pipes.postDevAsset* -> pipemin's assetStream
 
 Process all asset files before feeding them into pipemin.<br>
 Note: sources.devAssets are marked as {read: false}, no file's content will be provided,

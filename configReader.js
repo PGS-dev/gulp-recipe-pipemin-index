@@ -13,7 +13,7 @@ module.exports = function ($, config) {
                 pipeminWatchIndex: 'watch:index'
             },
             order: {
-                postDevAssetsSort: 100
+                postDevAssetSort: 100
             }
         }, {
             paths: {
