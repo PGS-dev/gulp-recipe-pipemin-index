@@ -1,10 +1,11 @@
 'use strict';
 
 module.exports = function ($, config) {
+    var _ = $.lodash;
 
-    $.utils.checkMandatory(config, ['sources.index', 'sources.devAssets']);
+    $.utils.checkMandatory(config, ['sources.index', 'sources.assets']);
 
-    config = $.lodash.merge({
+    config = _.merge({
             paths: {
                 pipeminTmp: 'tmp/'
             },
@@ -26,7 +27,14 @@ module.exports = function ($, config) {
         },
         config);
 
-    // force dev assets to be {read: false} for performance
-    config.sources.devAssets = {files: config.sources.devAssets, read: false};
+    var tempFiles = {
+        files: config.paths.pipeminTmp + '/**',
+        base: config.paths.pipeminTmp
+    };
+
+    // add temp folder to dev sources and force assets to be {read: false} for performance.
+    config.sources.assets = {files: [config.sources.assets, tempFiles], read: false};
+
+    config.sources = _.pick(config.sources, 'assets', 'index');
     return config;
 };

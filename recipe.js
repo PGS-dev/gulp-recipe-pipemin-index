@@ -8,7 +8,6 @@
  * @param sources
  * @config paths.pipeminTmp destination temp
  * @config paths.tmp
- * @merged devAssets Asset files for dev pipemin
  * @sequential preDevBuild Preprocess index file before it hits pipemin
  * @sequential postDevBuild Post-process index before writing to fs
  * @sequential postDevAsset Hook just after dev assets source pipe
@@ -17,23 +16,19 @@
 module.exports = function ($, config, sources) {
     var _ = $.lodash;
 
-    function devAssetPipe() {
-        return $.utils.mergedLazypipe($.utils.getPipes('devAsset'));
-    }
-
     /**
      * Builds index with pipemin
      * @task index
      * @config tasks.pipeminIndex
      * @config tasks.index
      * @config sources.index index files to process
-     * @config sources.devAssets assets list to be referenced in index file
+     * @config sources.assets assets list to be referenced in index file
      */
     function pipeminIndexTask() {
         var preBuildPipe = $.utils.sequentialLazypipe($.utils.getPipes('preDevBuild'));
         var postBuildPipe = $.utils.sequentialLazypipe($.utils.getPipes('postDevBuild'));
         var postDevAssetPipe = $.utils.sequentialLazypipe($.utils.getPipes('postDevAsset'));
-        var assetStream = $.utils.mergedLazypipe([sources.devAssets.pipe(postDevAssetPipe), devAssetPipe()]);
+        var assetStream = sources.assets.pipe(postDevAssetPipe);
 
         return $.lazypipe()
             .pipe(sources.index)
@@ -48,7 +43,6 @@ module.exports = function ($, config, sources) {
             .pipe($.gulp.dest, config.paths.pipeminTmp)();
     }
 
-
     /**
      * Run watching on index and all dev assets, recompile index
      * @task watch:index
@@ -57,9 +51,9 @@ module.exports = function ($, config, sources) {
      */
     // no dependency on index, as preServe will be called by server
     function pipeminWatchIndexTask() {
-        $.utils.watchSource([devAssetPipe(), sources.devAssets, sources.index], {
+        $.utils.watchSource([sources.assets, sources.index], {
             events: ['add', 'unlink']
-        }, _.debounce(function (vinyl) {
+        }, _.debounce(function () {
             $.utils.runSubtasks(config.tasks.pipeminIndex);
         }, 100))();
     }
