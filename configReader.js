@@ -35,6 +35,6 @@ module.exports = function ($, config) {
     // add temp folder to dev sources and force assets to be {read: false} for performance.
     config.sources.assets = {files: [config.sources.assets, tempFiles], read: false};
 
-    config.sources = _.pick(config.sources, 'assets', 'index');
+    config.sources = _.pick(config.sources, 'assets', 'index', 'indexDeps');
     return config;
 };

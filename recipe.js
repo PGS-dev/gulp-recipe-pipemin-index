@@ -49,16 +49,21 @@ module.exports = function ($, config, sources) {
      * @config tasks.pipeminWatchIndex
      * @config tasks.watchIndex
      */
+
     // no dependency on index, as preServe will be called by server
     function pipeminWatchIndexTask() {
-        $.utils.watchSource([sources.assets, sources.index], {
+        $.utils.watchSource([sources.assets], {
             events: ['add', 'unlink']
         }, _.debounce(function () {
             $.utils.runSubtasks(config.tasks.pipeminIndex);
-        }, 100))();
+        }, 50))();
+
+        $.utils.watchSource([sources.index, sources.indexDeps], function () {
+            $.utils.runSubtasks(config.tasks.pipeminIndex);
+        })();
     }
 
-    $.utils.maybeTask(config.tasks.pipeminWatchIndex,pipeminWatchIndexTask);
+    $.utils.maybeTask(config.tasks.pipeminWatchIndex, pipeminWatchIndexTask);
     $.utils.maybeTask(config.tasks.pipeminIndex, pipeminIndexTask);
 
     return {
