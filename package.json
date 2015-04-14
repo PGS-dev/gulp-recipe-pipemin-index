@@ -1,6 +1,6 @@
 {
   "name": "gulp-recipe-pipemin-index",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Receipe for building index file in development",
   "main": "main.js",
   "repository": {
