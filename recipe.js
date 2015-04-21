@@ -77,7 +77,7 @@ module.exports = function ($, config, sources) {
         /**
          * @hooks preServe index task
          */
-        preServe: config.tasks.pipeminIndex,
+        postCompile: config.tasks.pipeminIndex,
         watch: config.tasks.pipeminWatchIndex
     };
 };
